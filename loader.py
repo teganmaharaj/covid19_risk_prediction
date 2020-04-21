@@ -1,5 +1,6 @@
 import pickle
 from addict import Dict
+from collections import namedtuple
 import os
 import glob
 
@@ -23,21 +24,30 @@ class ContactDataset(Dataset):
         "encounter_is_contagion",
     ]
 
+    Item = namedtuple("Item", (
+        "health_history", "history_days", "current_compartment", "infectiousness_history",
+        *SET_VALUED_FIELDS))
+
+    SET_VALUED_FIELDS_IDX = len(Item._fields) - len(SET_VALUED_FIELDS)
+
+    Batch = namedtuple("Batch", (*Item._fields, "mask"))
+
     def __init__(self, path: str, relative_days=True):
         """
         Parameters
         ----------
         path : str
-            Path to the pickle file.
+            Path to the pickle files.
         relative_days : bool
-            If set to True, the time-stamps (as days) are formatted such that
+            If set to True, the timestamps (as days) are formatted such that
             the current day is represented as 0. Previous days are represented
             as negative values, i.e. day = -2 means the day before yesterday.
-            If set to False, the time-stamps show the true number of days since
+            If set to False, the timestamps show the true number of days since
             day 0 (e.g. "today" can be represented as say 15).
         """
         # Private
-        self._num_id_bits = 16
+        # * I thought it was 8 bits even if the code I have is with 4 bits
+        self._num_id_bits = 8
         # Public
         self.path = path
         self.relative_days = relative_days
@@ -51,6 +61,9 @@ class ContactDataset(Dataset):
             *[
                 [
                     int(component)
+                    # * In the last version of the code I have, the structure is
+                    # '[...]/day/human/daily_human.pkl' but I find this structure
+                    # better. I'll discuss to use it
                     for component in os.path.basename(file).strip(".pkl").split("-")
                 ]
                 for file in files
@@ -71,11 +84,18 @@ class ContactDataset(Dataset):
         return self.num_humans * self.num_days
 
     def read(self, human_idx, day_idx):
+        # * In the last version of the code I have, the structure is
+        # '[...]/day/human/daily_human.pkl' but I find this structure better.
+        # I'll discuss to use it. The dataset should also probably be put in
+        # an uncompressed zip to ease the sharing
         file_name = os.path.join(self.path, f"{day_idx}-{human_idx + 1}.pkl")
         with open(file_name, "rb") as f:
             return pickle.load(f)
 
-    def get(self, human_idx: int, day_idx: int) -> Dict:
+    def get(self, human_idx: int, day_idx: int) -> Item:
+        # * I thought encounter_partner_id was 8 bits but the code I have is with 4 bits
+        # * encounter_message is 4 bits
+        # * I like the naming of the fields. We should probably uniformize
         """
         Parameters
         ----------
@@ -86,23 +106,23 @@ class ContactDataset(Dataset):
 
         Returns
         -------
-        Dict
-            An addict with the following attributes:
+        namedtuple
+            A namedtuple with the following attributes:
                 -> `health_history`: 14-day health history of self of shape (14, 13)
                         with channels `reported_symptoms` (12), `test_results`(1).
-                -> `history_days`: time-stamps to go with the health_history.
+                -> `history_days`: timestamps to go with the health_history, of shape (14, 1).
                 -> `current_compartment`: current epidemic compartment (S/E/I/R)
                     of shape (4,).
                 -> `infectiousness_history`: 14-day history of infectiousness,
                     of shape (14, 1).
                 -> `encounter_health`: health during encounter, of shape (M, 13)
-                -> `encounter_message`: risk transmitted during encounter, of shape (M, 8).
-                        These are the 8 bits of info that can be sent between users.
+                -> `encounter_message`: risk transmitted during encounter, of shape (M, 4).
+                        These are the 4 bits of info that can be sent between users.
                 -> `encounter_partner_id`: id of the other in the encounter,
-                        of shape (M, num_id_bits). If num_id_bits = 16, it means that the
-                        id (say 65535) is represented in 16-bit binary.
+                        of shape (M, num_id_bits). If num_id_bits = 8, it means that the
+                        id (say 255) is represented in 8-bit binary.
                 -> `encounter_day`: the day of encounter, of shape (M, 1)
-                -> `encounter_is_contagion`: whether the encounter was a contagion.
+                -> `encounter_is_contagion`: whether the encounter was a contagion, of shape (M, 1).
         """
         human_day_info = self.read(human_idx, day_idx)
         # -------- Encounters --------
@@ -113,6 +133,7 @@ class ContactDataset(Dataset):
         #  Filter encounter_info
         if encounter_info.size == 0:
             raise InvalidSetSize
+        # * Will always be True since the data is already the rolling last 14 days
         valid_encounter_mask = encounter_info[:, 2] > (day_idx - 14)
         encounter_info = encounter_info[valid_encounter_mask]
         # Check again
@@ -127,6 +148,7 @@ class ContactDataset(Dataset):
         # Convert partner-id's to binary (shape = (M, num_id_bits))
         encounter_partner_id = (
             np.unpackbits(
+                # * I thought it was 8 bits but the code I have is with 4 bits
                 encounter_partner_id.astype(f"uint{self._num_id_bits}").view("uint8")
             )
             .reshape(num_encounters, -1)
@@ -159,7 +181,8 @@ class ContactDataset(Dataset):
         encounter_at_historical_day_idx = np.argmax(
             encounter_day == history_days, axis=0
         )
-        health_at_encounter = health_history[encounter_at_historical_day_idx, :]
+        # * : not necessary
+        health_at_encounter = health_history[encounter_at_historical_day_idx]
         if human_day_info["unobserved"]["is_recovered"]:
             current_compartment = "R"
         elif human_day_info["unobserved"]["is_infectious"]:
@@ -181,7 +204,8 @@ class ContactDataset(Dataset):
             history_days = history_days - day_idx
             encounter_day = encounter_day - day_idx
         # This should be it
-        return Dict(
+        # * Would you consider using a collections.namedtuple instead of an addict?
+        return self.Item(
             health_history=torch.from_numpy(health_history).float(),
             infectiousness_history=torch.from_numpy(infectiousness_history).float(),
             history_days=torch.from_numpy(history_days).float(),
@@ -204,30 +228,21 @@ class ContactDataset(Dataset):
 
     @classmethod
     def collate_fn(cls, batch):
-        fixed_size_collates = {
-            key: torch.stack([x[key] for x in batch], dim=0)
-            for key in batch[0].keys()
-            if key not in cls.SET_VALUED_FIELDS
-        }
-
+        fixed_size_collates = [torch.stack([x[i] for x in batch], dim=0)
+                              for i in range(cls.SET_VALUED_FIELDS_IDX)]
         # Make a mask
-        max_set_len = max([x[cls.SET_VALUED_FIELDS[0]].shape[0] for x in batch])
-        set_lens = torch.tensor([x[cls.SET_VALUED_FIELDS[0]].shape[0] for x in batch])
+        max_set_len = max([x[cls.SET_VALUED_FIELDS_IDX].shape[0] for x in batch])
+        set_lens = torch.tensor([x[cls.SET_VALUED_FIELDS_IDX].shape[0] for x in batch])
         mask = (
             torch.arange(max_set_len, dtype=torch.long)
             .expand(len(batch), max_set_len)
             .lt(set_lens[:, None])
         ).float()
         # Pad the set elements by writing in place to pre-made tensors
-        padded_collates = {
-            key: pad_sequence([x[key] for x in batch], batch_first=True)
-            for key in cls.SET_VALUED_FIELDS
-        }
-        # Make the final addict and return
-        collates = Dict(mask=mask)
-        collates.update(fixed_size_collates)
-        collates.update(padded_collates)
-        return collates
+        padded_collates = [pad_sequence([x[i] for x in batch], batch_first=True)
+                           for i in range(cls.SET_VALUED_FIELDS_IDX, len(cls.Item._fields))]
+        # Return the final Batch
+        return Batch(*fixed_size_collates, *padded_collates, mask=mask)
 
 
 def get_dataloader(batch_size, shuffle=True, num_workers=1, **dataset_kwargs):
