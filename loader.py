@@ -1,5 +1,4 @@
 import pickle
-from addict import Dict
 from collections import namedtuple
 import os
 import glob
@@ -11,27 +10,28 @@ from torch.utils.data.dataloader import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 
 
+_SET_VALUED_FIELDS = [
+    "encounter_health",
+    "encounter_message",
+    "encounter_partner_id",
+    "encounter_day",
+    "encounter_is_contagion",
+]
+
+_DatasetItem = namedtuple("DatasetItem", (
+    "health_history", "history_days", "current_compartment", "infectiousness_history",
+    *_SET_VALUED_FIELDS))
+
+_SET_VALUED_FIELDS_IDX = len(_DatasetItem._fields) - len(_SET_VALUED_FIELDS)
+
+_DatasetBatch = namedtuple("DatasetBatch", (*_DatasetItem._fields, "mask"))
+
+
 class InvalidSetSize(Exception):
     pass
 
 
 class ContactDataset(Dataset):
-    SET_VALUED_FIELDS = [
-        "encounter_health",
-        "encounter_message",
-        "encounter_partner_id",
-        "encounter_day",
-        "encounter_is_contagion",
-    ]
-
-    Item = namedtuple("Item", (
-        "health_history", "history_days", "current_compartment", "infectiousness_history",
-        *SET_VALUED_FIELDS))
-
-    SET_VALUED_FIELDS_IDX = len(Item._fields) - len(SET_VALUED_FIELDS)
-
-    Batch = namedtuple("Batch", (*Item._fields, "mask"))
-
     def __init__(self, path: str, relative_days=True):
         """
         Parameters
@@ -92,7 +92,7 @@ class ContactDataset(Dataset):
         with open(file_name, "rb") as f:
             return pickle.load(f)
 
-    def get(self, human_idx: int, day_idx: int) -> Item:
+    def get(self, human_idx: int, day_idx: int) -> _DatasetItem:
         # * I thought encounter_partner_id was 8 bits but the code I have is with 4 bits
         # * encounter_message is 4 bits
         # * I like the naming of the fields. We should probably uniformize
@@ -205,7 +205,7 @@ class ContactDataset(Dataset):
             encounter_day = encounter_day - day_idx
         # This should be it
         # * Would you consider using a collections.namedtuple instead of an addict?
-        return self.Item(
+        return _DatasetItem(
             health_history=torch.from_numpy(health_history).float(),
             infectiousness_history=torch.from_numpy(infectiousness_history).float(),
             history_days=torch.from_numpy(history_days).float(),
@@ -229,10 +229,10 @@ class ContactDataset(Dataset):
     @classmethod
     def collate_fn(cls, batch):
         fixed_size_collates = [torch.stack([x[i] for x in batch], dim=0)
-                              for i in range(cls.SET_VALUED_FIELDS_IDX)]
+                               for i in range(_SET_VALUED_FIELDS_IDX)]
         # Make a mask
-        max_set_len = max([x[cls.SET_VALUED_FIELDS_IDX].shape[0] for x in batch])
-        set_lens = torch.tensor([x[cls.SET_VALUED_FIELDS_IDX].shape[0] for x in batch])
+        max_set_len = max([x[_SET_VALUED_FIELDS_IDX].shape[0] for x in batch])
+        set_lens = torch.tensor([x[_SET_VALUED_FIELDS_IDX].shape[0] for x in batch])
         mask = (
             torch.arange(max_set_len, dtype=torch.long)
             .expand(len(batch), max_set_len)
@@ -240,9 +240,9 @@ class ContactDataset(Dataset):
         ).float()
         # Pad the set elements by writing in place to pre-made tensors
         padded_collates = [pad_sequence([x[i] for x in batch], batch_first=True)
-                           for i in range(cls.SET_VALUED_FIELDS_IDX, len(cls.Item._fields))]
+                           for i in range(_SET_VALUED_FIELDS_IDX, len(_DatasetItem._fields))]
         # Return the final Batch
-        return Batch(*fixed_size_collates, *padded_collates, mask=mask)
+        return _DatasetBatch(*fixed_size_collates, *padded_collates, mask=mask)
 
 
 def get_dataloader(batch_size, shuffle=True, num_workers=1, **dataset_kwargs):
