@@ -235,8 +235,8 @@ class ContactDataset(Dataset):
                 # Try another day
                 day_idx = (day_idx + 1) % self.num_days
 
-    @classmethod
-    def collate_fn(cls, batch):
+    @staticmethod
+    def collate_fn(batch):
         fixed_size_collates = [
             torch.stack([x[i] for x in batch], dim=0)
             for i in range(_SET_VALUED_FIELDS_IDX)

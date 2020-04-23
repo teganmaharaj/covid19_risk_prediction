@@ -64,13 +64,14 @@ class Tests(unittest.TestCase):
             self.assertEqual(len(batch[key]), batch_size)
 
     def test_dataset(self):
-        from loader import ContactDataset
+        from loader import ContactDataset, _DatasetItem
         from addict import Dict
+        from collections import namedtuple
 
         path = "../data/0-risks"
         dataset = ContactDataset(path)
         sample = dataset.get(890, 25)
-        self.assertIsInstance(sample, Dict)
+        self.assertIsInstance(sample, _DatasetItem)
 
 
 if __name__ == "__main__":
