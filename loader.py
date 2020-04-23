@@ -18,12 +18,21 @@ _SET_VALUED_FIELDS = [
     "encounter_is_contagion",
 ]
 
-_DatasetItem = namedtuple("DatasetItem", (
-    "health_history", "history_days", "current_compartment", "infectiousness_history",
-    *_SET_VALUED_FIELDS))
+_DatasetItem = namedtuple(
+    "DatasetItem",
+    (
+        "health_history",
+        "history_days",
+        "current_compartment",
+        "infectiousness_history",
+        *_SET_VALUED_FIELDS,
+    ),
+)
 
+# noinspection PyProtectedMember,PyUnresolvedReferences
 _SET_VALUED_FIELDS_IDX = len(_DatasetItem._fields) - len(_SET_VALUED_FIELDS)
 
+# noinspection PyProtectedMember,PyUnresolvedReferences
 _DatasetBatch = namedtuple("DatasetBatch", (*_DatasetItem._fields, "mask"))
 
 
@@ -228,8 +237,10 @@ class ContactDataset(Dataset):
 
     @classmethod
     def collate_fn(cls, batch):
-        fixed_size_collates = [torch.stack([x[i] for x in batch], dim=0)
-                               for i in range(_SET_VALUED_FIELDS_IDX)]
+        fixed_size_collates = [
+            torch.stack([x[i] for x in batch], dim=0)
+            for i in range(_SET_VALUED_FIELDS_IDX)
+        ]
         # Make a mask
         max_set_len = max([x[_SET_VALUED_FIELDS_IDX].shape[0] for x in batch])
         set_lens = torch.tensor([x[_SET_VALUED_FIELDS_IDX].shape[0] for x in batch])
@@ -239,8 +250,11 @@ class ContactDataset(Dataset):
             .lt(set_lens[:, None])
         ).float()
         # Pad the set elements by writing in place to pre-made tensors
-        padded_collates = [pad_sequence([x[i] for x in batch], batch_first=True)
-                           for i in range(_SET_VALUED_FIELDS_IDX, len(_DatasetItem._fields))]
+        # noinspection PyProtectedMember,PyUnresolvedReferences
+        padded_collates = [
+            pad_sequence([x[i] for x in batch], batch_first=True)
+            for i in range(_SET_VALUED_FIELDS_IDX, len(_DatasetItem._fields))
+        ]
         # Return the final Batch
         return _DatasetBatch(*fixed_size_collates, *padded_collates, mask=mask)
 
