@@ -2,12 +2,12 @@ device: "cuda"
 
 data:
   paths:
-    train: "./data/1k-1-output"
-    validate: "./data/1k-1-output"
+    train: "./data/sim_people-1000_days-60_init-0.01_seed-7_20200423-130419-output"
+    validate: "./data/sim_people-1000_days-60_init-0.01_seed-8_20200423-131153-output"
   loader_kwargs:
-    batch_size: 8
+    batch_size: 32
     shuffle: true
-    num_workers: 1
+    num_workers: 4
     relative_days: true
 
 model:
@@ -58,4 +58,4 @@ training:
 
 wandb:
   use: true
-  log_every: 50
+  log_every: 100
