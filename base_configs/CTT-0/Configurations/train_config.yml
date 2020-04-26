@@ -2,8 +2,13 @@ device: "cuda"
 
 data:
   paths:
-    train: "./data/sim_people-1000_days-60_init-0.01_seed-7_20200423-130419-output"
-    validate: "./data/sim_people-1000_days-60_init-0.01_seed-8_20200423-131153-output"
+    train: 
+      - "./data/sim_people-1000_days-60_init-0.01_seed-7_20200423-130419-output"
+      - "./data/sim_people-1000_days-60_init-0.01_seed-9_20200423-131911-output"
+      - "./data/sim_people-1000_days-60_init-0.01_seed-5_20200423-124910-output"
+    validate: 
+      - "./data/sim_people-1000_days-60_init-0.01_seed-8_20200423-131153-output"
+      - "./data/sim_people-1000_days-60_init-0.01_seed-6_20200423-125649-output"
   loader_kwargs:
     batch_size: 32
     shuffle: true
