@@ -10,7 +10,7 @@ data:
       - "./data/sim_people-1000_days-60_init-0.01_seed-8_20200423-131153-output"
       - "./data/sim_people-1000_days-60_init-0.01_seed-6_20200423-125649-output"
   loader_kwargs:
-    batch_size: 32
+    batch_size: 64
     shuffle: true
     num_workers: 4
     relative_days: true
