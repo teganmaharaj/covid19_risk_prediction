@@ -50,27 +50,34 @@ For a full write-up of this task, see [this document](TODO).
 **Targets:** TODO
 
 **Metrics:** 
-* MSE is Mean Squared Error, between the target risk and the prediction
-* MRR is  
+
+* **P**: Precision is of the top 1% of highest-risk people, what % are correctly identified as being infected
+* **P-U**: Precision-Untested is of the top 1% of highest-risk people, excluding those who have a positive test, what % are correctly identified as being infected
+* **P-A**: Precision-Asymptomatic is of the top 1% of highest-risk people, excluding those who have a positive test and those who have symptoms, what % are correctly identified as being infected
+* **R**: Recall is what % of those infected are correctly identified as being infected
+* **R-U**: Recall-Untested is what % of those infected are correctly identified as being infected, among people who have not been tested
+* **R-A** Recall-Asymptomatic is what % of those infected are correctly identified as being infected, among people who are asymptomatic
+* **MSE**: is Mean Squared Error, between the target risk and the prediction. (Possibly N/A for non-ML methods)
+* **MRR**: is Mean Reciprocal Rank TODO
 
 
 ## Results table
 
-Model Name | Brief description | ML? | MSE | MRR
+Model Name | Brief description | ML? | P | P-U | P-A | R | R-U | R-A | MSE | MRR
 --- | --- | --- | --- | ---
-[Naive Contact Tracing](TODO) | Simple risk calculation based on number of contacts | No | - | -
-[Transformer](https://github.com/nasimrahaman/ctt) | Uses attention over last 14 days of encounters | Yes | - | -
+[Naive Contact Tracing](TODO) | Simple risk calculation based on number of contacts | No | - | -| - | -| - | -
+[Transformer](https://github.com/nasimrahaman/ctt) | Uses attention over last 14 days of encounters | Yes | - | -| - | -| - | -
 
 
 ## Reporting Results
 
 To report results in the leaderboard submit a pull request from your repo to the master branch of this repo:
-* Place your row at the appropriate height so that the table is sorted by performance on the first metric (MSE)
-* You must fill all fields in the leaderboard row:
+* Place your row at the appropriate height so that the table is sorted by performance on the first metric (Precision)
+* You must fill all fields in the leaderboard row (except metrics which do not apply to your metuod:
     - Model name (which is a link to your repo)
     - One-line description of your model
     - Whether your method employs machine learning (yes/no)
-    - Metrics (MSE and MRR)
+    - Metrics (all Precision and  and MRR)
 * Make sure your repo has a brief description of your model in the README.md
 * The repo making the PR should contain all of your code, which must be open-source (not private)
 * Tag @teganmaharaj and @nasimrahaman as reviewers of your PR
