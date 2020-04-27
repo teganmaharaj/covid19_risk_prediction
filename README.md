@@ -68,9 +68,9 @@ For a full write-up of this task, see [this document](TODO).
 To report results in the leaderboard submit a pull request from your repo to the master branch of this repo:
 * Place your row at the appropriate height so that the table is sorted by performance on the first metric (TODO)
 * You must fill all fields in the leaderboard row:
-..* Model name (which is a link to your repo)
-..* One-line description of your model
-..* Numbers for all metrics
+... * Model name (which is a link to your repo)
+... * One-line description of your model
+... * Numbers for all metrics
 * Make sure your repo has a brief description of your model in the README.md
 * The repo making the PR should contain all of your code, which must be open-source (not private)
 * Tag @teganmaharaj and @nasimrahaman as reviewers of your PR
@@ -80,9 +80,9 @@ To report results in the leaderboard submit a pull request from your repo to the
 
 The next stage for a successful risk predictor is to be integrated into the loop of the simulator to test different intervention strategies based on the predicted risk. There is also the potential to jointly train both the simulator and risk predictor. Projects linked below explore both of these possibilities.
 
-[Simulator](https://github.com/pg2455/covid_p2p_simulation) | Generates the underlying data, using an epidemiolgically-informed agent-based model written in Simpy 
-[Data parser](TODO) | Takes the logs from the Simulator and generates the supervised learning dataset, masking/discretizing some values in accordance with privacy concerns.
-[Transformer model](https://github.com/nasimrahaman/ctt) | Full version of the model the example code in here is based on
-[GraphNN model](TODO) | Implementation of a graph neural network for joint risk prediction and simulator optimizatio 
-[coVAEd model](TODO) | Variational auto-encoder approach for joint risk prediction and model optimization
-[Decentralized Loopy Belief](TODO) | Training of a graphical model of disease propagation via message-passing
+* [Simulator](https://github.com/pg2455/covid_p2p_simulation): Generates the underlying data, using an epidemiolgically-informed agent-based model written in Simpy 
+* [Data parser](TODO): Takes the logs from the Simulator and generates the supervised learning dataset, masking/discretizing some values in accordance with privacy concerns.
+* [Transformer model](https://github.com/nasimrahaman/ctt): Full version of the model the example code in here is based on
+* [GraphNN model](TODO): Implementation of a graph neural network for joint risk prediction and simulator optimizatio 
+* [coVAEd model](TODO): Variational auto-encoder approach for joint risk prediction and model optimization
+* [Decentralized Loopy Belief](TODO): Training of a graphical model of disease propagation via message-passing
