@@ -23,19 +23,28 @@ This repo contains pytorch dataloaders and a Transformer model; you can start fr
 
 ### Dataset details
 
+Risk Prediction Type | Clustering Type | Simulator Version | Risk Prediction Version | Population | Duration (days) | Seeds | Link | MD5
+--- | --- | --- | --- | --- | --- | --- | --- | ---
+Naive First-Order Contact Tracing | Heuristic | [6661c1d110](https://github.com/pg2455/covid_p2p_simulation/commit/6661c1d110a1751ae1ecc1c139ed5e3e3d6bf370)  | [c650e1f981](https://github.com/mila-iqia/covid_p2p_risk_prediction/commit/c650e1f981d5fe3a67458db545e64721cea4fc38) | 1,000 | 60 | 10 | [download](https://covid-p2p-simulation.s3.ca-central-1.amazonaws.com/covi-1k-04-27.zip) | 0886c2001edee33dd0f59fd58062909f
+Naive First-Order Contact Tracing | Heuristic | [6661c1d110](https://github.com/pg2455/covid_p2p_simulation/commit/6661c1d110a1751ae1ecc1c139ed5e3e3d6bf370)  | [c650e1f981](https://github.com/mila-iqia/covid_p2p_risk_prediction/commit/c650e1f981d5fe3a67458db545e64721cea4fc38) | 50,000 | 60 | 5 | Coming by April 28th | TBD
+Transformer | Heuristic |  N/A  | N/A | 50,000 | 60 | 10 | Coming by April 30th | TBD
+
 Extract the provided zip file into `\data`.
 ```
-unzip data.zip data
+unzip <data-file-name>.zip data
 ```
 
 ### Dependencies
 
-Besides `pytorch` and the usual ML stack, you will need `speedrun` which you can install as: 
+TODO @Nasim if you have made an env for this, please replace/update this section.
+To use the provided code data loaders, main loop, and model, you will need:
+* `pytorch` TODO VERSION
+* the usual ML stack (`numpy`...TODO)
+* `speedrun` which you can install via: 
 ```
  pip install git+https://github.com/inferno-pytorch/speedrun.git@dev`. 
 ```
-
-For logging with wandb, you'll also need to `pip install wandb`. 
+* For logging with wandb, you'll also need to `pip install wandb`. 
 
 ### Train the transformer model
 
@@ -53,11 +62,23 @@ Replace the models.py with your own if you want to use this code as a scaffold. 
 
 ### Task Details
 
-For a full write-up of this task, see [this document](TODO).
+This is framed as a supervised learning task, with the following inputs, targets, and metrics:
 
-**Input:** TODO
+Inputs and targets are described for 1 data example (1 person).
 
-**Targets:** TODO
+**Input:** 
+* `reported_symptoms`: (*14, N_s*) array where *N_s* is the number of possible symptoms. Each (*i,j*) element of the array is a binary indicator of whether the person had symptom *j* at day *t-i*
+* `test_results` (14) array of values {-1,0,1} where the *i*th element indicates the test result at day *t-i*. A value of -1 means tested negative, 0 means not tested, and 1 means tested positive.
+* `candidate_encounters`: (*N_e, 3*) array where *N_e* is the number of encounters in the past 14 days. For each encounter, the 3 dimensions are: 
+    - `ID`: an integer indicating the identity of the other person in the encounter (estimated by a [clustering algorithm](TODO))
+    - `encounter_risk`: [0-15] the discretized risk level of the other person in the encounter, 0 is the lowest level of risk and 15 is the highest. These risks are estimated by a model; current datasets use a [naive contact-tracing calculation](TODO).
+    - `day` [0-13] day of the encounter, 0 being today and 13 being 14 days ago
+
+**Targets:** 
+* Classification of infection status:
+    - Binary variable 0/1 of whether the person is infected
+    - (*N_e*) binary array 0/1 for each encounter, where the target is 1 if the person was infected by that encounter and 0 if they are were not
+* Regression of personal infectiousness: (14) array of floats of that person's infectiousness for each of the past 14 days
 
 **Metrics:** 
 
@@ -67,7 +88,7 @@ For a full write-up of this task, see [this document](TODO).
 * **R**: Recall is what % of those infected are correctly identified as being infected
 * **R-U**: Recall-Untested is what % of those infected are correctly identified as being infected, among people who have not been tested
 * **R-A** Recall-Asymptomatic is what % of those infected are correctly identified as being infected, among people who are asymptomatic
-* **MSE**: is Mean Squared Error, between the target risk and the prediction. (Possibly N/A for non-ML methods)
+* **MSE**: is Mean Squared Error, between the target risk and the prediction for the infectiousness of each person. (Possibly N/A for non-ML methods)
 * **MRR**: is Mean Reciprocal Rank TODO
 
 
