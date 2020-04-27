@@ -64,9 +64,9 @@ For a full write-up of this task, see [this document](TODO).
 To report results in the leaderboard submit a pull request from your repo to the master branch of this repo:
 * Place your row at the appropriate height so that the table is sorted by performance on the first metric (TODO)
 * You must fill all fields in the leaderboard row:
-... * Model name (which is a link to your repo)
-... * One-line description of your model
-... * Numbers for all metrics
+...* Model name (which is a link to your repo)
+...* One-line description of your model
+...* Numbers for all metrics
 * Make sure your repo has a brief description of your model in the README.md
 * The repo making the PR should contain all of your code, which must be open-source (not private)
 * Tag @teganmaharaj and @nasimrahaman as reviewers of your PR
