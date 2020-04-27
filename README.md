@@ -4,11 +4,9 @@ As part of a project for creating a [COVID-19 risk-management app](https://TODO)
 
 **The goal** of providing this dataset is to find machine learning models (or any method!) which can do a good job of predicting risk and sources of infection from the provided features. The features are constrained by many concerns about privacy and security, making ordinary contact-tracing impracticable; this is why we need to train the predictors on simulated data. The simulated data is parsed to 'look like' the real data that would eventually be gathered by the app. The best risk estimator(s) will be used in an app to provide personalized recommendations and interventions. There is potential for these targetted interventions to reduce the spread of COVID-19 much more effectively than generic social distancing or other measures.
 
-This repo contains pytorch dataloaders and a Transformer model; you can start from these and replace the Transformer with your own model, or use them as inspiration for development with another framework. 
+This repo contains pytorch dataloaders and a Transformer model; you can start from these and replace the Transformer with your own model, or use them as inspiration for development with another framework. Upload your results to the table by making a PR (details below). 
 
-Upload your results to the table by making a PR (details below). 
-
-IMPORTANT: Do not train/tune on the test set, optimize for any of the metrics, or otherwise attempt to "cheat" at the task. This is not a contest. This project has real-world applications; under-estimating risk due to poor generalization/over-fitting could be dangerous.  We will keep a private test set to check for this, but is extremely important to use all machine learning best-practices, and it is everyone's individual responsibility to to so to the best of their ability.
+**IMPORTANT:** Do not train/tune on the test set, optimize for any of the metrics, or otherwise attempt to "cheat" at the task. This is not a contest. This project has real-world applications; under-estimating risk due to poor generalization/over-fitting could be dangerous.  We will keep a private test set to check for this, but is extremely important to use all machine learning best-practices, and it is everyone's individual responsibility to to so to the best of their ability.
 
 
 ## Results table
@@ -39,10 +37,8 @@ For logging with wandb, you'll also need to `pip install wandb`.
 
 ### Train the transformer model
 
-Make an experimental directory
-```
-mkdir exp
-```
+Make an experimental directory: `mkdir exp`
+
 Run the training script, logging to `exp/`:
 ```
 python train.py exp/MY-CTT-EXPERIMENT-0 --inherit base_config/CTT-0
@@ -51,7 +47,7 @@ This will start training on a GPU, if available. If you want to use a CPU instea
 
 ### Train your own model
 
-Replace the models.py with your own if you want to use this code as a scaffold. Feel free to use only the data loaders and metrics and write your own main loop etc.
+Replace the models.py with your own if you want to use this code as a scaffold. Feel free to use only the data loaders and metrics and write your own main loop etc., but we may be slower to evaluate your PR the more different it is from this code.
 
 ## Task Details
 
