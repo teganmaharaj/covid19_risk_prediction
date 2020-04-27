@@ -21,14 +21,14 @@ Model Name | Brief description | ML? | TODOMETRIC | TODOMETRIC
 
 ## Quick Start
 
-# Get the data 
+### Get the data 
 
 Extract the provided zip file into `\data`.
 ```
 unzip data.zip data
 ```
 
-# Dependencies
+### Dependencies
 
 Besides `pytorch` and the usual ML stack, you will need `speedrun` which you can install as: 
 ```
@@ -37,7 +37,7 @@ Besides `pytorch` and the usual ML stack, you will need `speedrun` which you can
 
 For logging with wandb, you'll also need to `pip install wandb`. 
 
-# Train the transformer model
+### Train the transformer model
 
 Make an experimental directory
 ```
@@ -49,7 +49,7 @@ python train.py exp/MY-CTT-EXPERIMENT-0 --inherit base_config/CTT-0
 ```
 This will start training on a GPU, if available. If you want to use a CPU instead, append  `--config.device cpu` to the above command. 
 
-# Train your own model
+### Train your own model
 
 Replace the models.py with your own if you want to use this code as a scaffold. Feel free to use only the data loaders and metrics and write your own main loop etc.
 
