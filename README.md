@@ -64,9 +64,9 @@ For a full write-up of this task, see [this document](TODO).
 ## Results table
 
 Model Name | Brief description | ML? | P | P-U | P-A | R | R-U | R-A | MSE | MRR
---- | --- | --- | --- | ---
-[Naive Contact Tracing](TODO) | Simple risk calculation based on number of contacts | No | - | -| - | -| - | -
-[Transformer](https://github.com/nasimrahaman/ctt) | Uses attention over last 14 days of encounters | Yes | - | -| - | -| - | -
+--- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+[Naive Contact Tracing](TODO) | Simple risk calculation based on number of contacts | No | - | -| - | - | - | - | - | -
+[Transformer](https://github.com/nasimrahaman/ctt) | Uses attention over last 14 days of encounters | Yes | - | - | - | - | - | - | - | -
 
 
 ## Reporting Results
