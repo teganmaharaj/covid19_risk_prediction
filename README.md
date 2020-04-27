@@ -9,7 +9,7 @@ This repo contains pytorch dataloaders and a Transformer model; you can start fr
 **IMPORTANT:** Do not train/tune on the test set, optimize for any of the metrics, or otherwise attempt to "cheat" at the task. This is not a contest. This project has real-world applications; under-estimating risk due to poor generalization/over-fitting could be dangerous.  We will keep a private test set to check for this, but is extremely important to use all machine learning best-practices, and it is everyone's individual responsibility to to so to the best of their ability.
 
 
-## Quick Start/ Overview
+## Quick Start / Overview
 
 1. Clone or fork this repo
 2. [Download the data](https://covid-p2p-simulation.s3.ca-central-1.amazonaws.com/covi-1k-04-27.zip)
@@ -24,11 +24,11 @@ This repo contains pytorch dataloaders and a Transformer model; you can start fr
 ### Dataset details
 
 Dataset ID |  Clustering Type | Target Risk Predictor | Simulator Version | Risk Prediction Version | Population | Duration (days) | Seeds | Link | MD5 hash
---- | --- | --- | --- | --- | --- | --- | --- | ---
+--- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 V1-1K | Heuristic  |Naive First-Order Contact Tracing | [6661c1d110](https://github.com/pg2455/covid_p2p_simulation/commit/6661c1d110a1751ae1ecc1c139ed5e3e3d6bf370)  | [c650e1f981](https://github.com/mila-iqia/covid_p2p_risk_prediction/commit/c650e1f981d5fe3a67458db545e64721cea4fc38) | 1,000 | 60 | 10 | [download](https://covid-p2p-simulation.s3.ca-central-1.amazonaws.com/covi-1k-04-27.zip) | 0886c2001edee33dd0f59fd58062909f
 V1-50K | Heuristic |Naive First-Order Contact Tracing | [6661c1d110](https://github.com/pg2455/covid_p2p_simulation/commit/6661c1d110a1751ae1ecc1c139ed5e3e3d6bf370)  | [c650e1f981](https://github.com/mila-iqia/covid_p2p_risk_prediction/commit/c650e1f981d5fe3a67458db545e64721cea4fc38) | 50,000 | 60 | 5 | Coming by April 28th | TBD
 V2-1K | Heuristic | Transformer |  TBD |TBD | 50,000 | 60 | 10 | Coming by April 30th | TBD
-V2-1K | Heuristic | Transformer |  TBD |TBD | 50,000 | 60 | 10 | Coming by April 30th | TBD
+V2-50K | Heuristic | Transformer |  TBD |TBD | 50,000 | 60 | 10 | Coming by April 30th | TBD
 
 Extract the provided zip file into `\data`.
 ```
