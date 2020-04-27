@@ -1,6 +1,6 @@
 # Supervised COVID-19 risk prediction
 
-As part of a project for creating a [COVID-19 risk-management app](https://TODO), we have created a supervised learning dataset for predicting individuals' level of risk of infection, as well as their source of infection, from features of individuals (e.g. pre-existing medical conditions) and features of encounters between individuals. The dataset is output by [a city-level simulator](https://https://github.com/pg2455/covid_p2p_simulation) (a stochastic agent-based model). 
+As part of a project for creating a COVID-19 risk-management app, we have created a supervised learning dataset for predicting individuals' level of risk of infection, as well as their source of infection, from features of individuals (e.g. pre-existing medical conditions) and features of encounters between individuals. The dataset is output by [a city-level simulator](https://https://github.com/pg2455/covid_p2p_simulation) (a stochastic agent-based model). 
 
 **The goal** of providing this dataset is to find machine learning models (or any method!) which can do a good job of predicting risk and sources of infection from the provided features. The features are constrained by many concerns about privacy and security, making ordinary contact-tracing impracticable; this is why we need to train the predictors on simulated data. The simulated data is parsed to 'look like' the real data that would eventually be gathered by the app. The best risk estimator(s) will be used in an app to provide personalized recommendations and interventions. There is potential for these targetted interventions to reduce the spread of COVID-19 much more effectively than generic social distancing or other measures.
 
@@ -9,9 +9,19 @@ This repo contains pytorch dataloaders and a Transformer model; you can start fr
 **IMPORTANT:** Do not train/tune on the test set, optimize for any of the metrics, or otherwise attempt to "cheat" at the task. This is not a contest. This project has real-world applications; under-estimating risk due to poor generalization/over-fitting could be dangerous.  We will keep a private test set to check for this, but is extremely important to use all machine learning best-practices, and it is everyone's individual responsibility to to so to the best of their ability.
 
 
-## Quick Start
+## Quick Start/ Overview
 
-### Get the data 
+1. Clone or fork this repo
+2. [Download the data](https://covid-p2p-simulation.s3.ca-central-1.amazonaws.com/covi-1k-04-27.zip)
+3. Extract the data to a folder called data inside the repo : `unzip covi-1k-04-27.zip data`
+4. Install dependencies (see below) and `mkdir exp`
+5. Run the transformer on CPU to make sure everything is working `python train.py exp/MY-CTT-EXPERIMENT-0 --inherit base_config/CTT-0 --config.device cpu` 
+6. Replace the transformer model with your own and start experimenting!
+7. Upload your results to the results table below by making a PR to this repo
+
+## More information
+
+### Dataset details
 
 Extract the provided zip file into `\data`.
 ```
@@ -41,7 +51,7 @@ This will start training on a GPU, if available. If you want to use a CPU instea
 
 Replace the models.py with your own if you want to use this code as a scaffold. Feel free to use only the data loaders and metrics and write your own main loop etc., but we may be slower to evaluate your PR the more different it is from this code.
 
-## Task Details
+### Task Details
 
 For a full write-up of this task, see [this document](TODO).
 
@@ -61,7 +71,7 @@ For a full write-up of this task, see [this document](TODO).
 * **MRR**: is Mean Reciprocal Rank TODO
 
 
-## Results table
+## Results 
 
 Model Name | Brief description | ML? | P | P-U | P-A | R | R-U | R-A | MSE | MRR
 --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
@@ -69,7 +79,7 @@ Model Name | Brief description | ML? | P | P-U | P-A | R | R-U | R-A | MSE | MRR
 [Transformer](https://github.com/nasimrahaman/ctt) | Uses attention over last 14 days of encounters | Yes | - | - | - | - | - | - | - | -
 
 
-## Reporting Results
+### Reporting Results
 
 To report results in the leaderboard submit a pull request from your repo to the master branch of this repo:
 * Place your row at the appropriate height so that the table is sorted by performance on the first metric (Precision)
