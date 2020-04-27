@@ -9,14 +9,6 @@ This repo contains pytorch dataloaders and a Transformer model; you can start fr
 **IMPORTANT:** Do not train/tune on the test set, optimize for any of the metrics, or otherwise attempt to "cheat" at the task. This is not a contest. This project has real-world applications; under-estimating risk due to poor generalization/over-fitting could be dangerous.  We will keep a private test set to check for this, but is extremely important to use all machine learning best-practices, and it is everyone's individual responsibility to to so to the best of their ability.
 
 
-## Results table
-
-Model Name | Brief description | ML? | TODOMETRIC | TODOMETRIC
---- | --- | --- | --- | ---
-[Naive Contact Tracing](TODO) | Simple risk calculation based on number of contacts | No | TODO | TODO
-[Transformer](https://github.com/nasimrahaman/ctt) | Uses attention over last 14 days of encounters | Yes | TODO | TODO
-
-
 ## Quick Start
 
 ### Get the data 
@@ -57,16 +49,28 @@ For a full write-up of this task, see [this document](TODO).
 
 **Targets:** TODO
 
-**Metrics:** TODO 
+**Metrics:** 
+* MSE is Mean Squared Error, between the target risk and the prediction
+* MRR is  
+
+
+## Results table
+
+Model Name | Brief description | ML? | MSE | MRR
+--- | --- | --- | --- | ---
+[Naive Contact Tracing](TODO) | Simple risk calculation based on number of contacts | No | - | -
+[Transformer](https://github.com/nasimrahaman/ctt) | Uses attention over last 14 days of encounters | Yes | - | -
+
 
 ## Reporting Results
 
 To report results in the leaderboard submit a pull request from your repo to the master branch of this repo:
-* Place your row at the appropriate height so that the table is sorted by performance on the first metric (TODO)
-* You must fill all fields in the leaderboard row:
-...* Model name (which is a link to your repo)
-...* One-line description of your model
-...* Numbers for all metrics
+* Place your row at the appropriate height so that the table is sorted by performance on the first metric (MSE)
+* You must fill all fields in the leaderboard row:..
+... - Model name (which is a link to your repo)..
+... - One-line description of your model..
+... - Whether your method employs machine learning (yes/no)..
+... - Metrics (MSE and MRR)..
 * Make sure your repo has a brief description of your model in the README.md
 * The repo making the PR should contain all of your code, which must be open-source (not private)
 * Tag @teganmaharaj and @nasimrahaman as reviewers of your PR
